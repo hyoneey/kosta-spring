@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 자동으로 선언  -->
+	<!-- 어노테이션 하려는 선언 -->
+	<context:annotation-config/>
+	<context:component-scan base-package="kosta"/>
+	
+	
+	<!-- 파일명으로 컨트롤러에게 전송하고 tomcat 서버로 실행가능하면 스프링으로 보지말고 실행하고, 없으면 404에러 -->
+	<!-- <url-pattern>/</url-pattern>으로 지정 -->
+	<mvc:annotation-driven/>
+	<mvc:default-servlet-handler/>
+
+	<!-- 명시적 선언 -->
+	<!--객체 생성 Bean--> 
+	<!-- constructor-arg value="값" ref="참조값"  -->
+	<!--  생성자 생성 constructor-arg - 여기에다가 선언해야 한번만 사용이 되어진다.-->
+<!-- 
+	<bean id="helloService" class="kosta.service.HelloService"></bean> 
+
+	<bean id="helloController" class="kosta.controller.helloController" >
+		<constructor-arg ref="helloService" name="service"/> 
+	</bean> 
+--> 
+
+	<!-- Tiles Setting -->
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles2def.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="viewResolver2" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+		<property name="order" value="1"/> <!-- 우선 순위 설정 -->
+	</bean>
+
+	<!-- property는 필드,클래스 변수나 인스턴스 변수를 의미하면 setter메서드를 이용해 값을 할당한다. 따라서 setter메서드가 없으면 사용 불가 -->
+	<!-- property name="변수명" value="값" ref="참조값" , view종류가 jsp일때 사용-->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/view/" />
+		<property name="suffix" value=".jsp" />	
+		<property name="order" value="2"/>
+	</bean>
+	
+	
+	<!-- DB Setting -->
+	
+	<!-- JDBC 사용  -->
+<!-- 
+	<bean id ="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean> 
+-->
+
+	<!-- MyBatis 사용 -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+
+	<!-- sqlSession Template를 만들기 위해 선언 : 마이바티스 사용 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="/WEB-INF/mybatis-config.xml"/>
+	</bean>
+	
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="jdbc/oracle"/>
+		<property name="resourceRef" value="true"/>	
+	</bean>
+	
+</beans>
