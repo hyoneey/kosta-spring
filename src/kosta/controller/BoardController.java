@@ -1,6 +1,7 @@
 package kosta.controller;
 
 
+import java.io.File;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import kosta.model.Board;
@@ -25,6 +27,7 @@ import kosta.model.BoardValidator;
 @Controller
 public class BoardController {
 	private BoardDao dao;
+	private String uploadDir ="C:/upload"; //경로 폴더 
 	
 	@Autowired
 	public void setDao(BoardDao dao) {
@@ -59,6 +62,18 @@ public class BoardController {
 		if(errors.hasErrors()){
 			System.out.println("error 발생");
 			return "insert_form";
+		}
+		
+		MultipartFile multipartFile = board.getUploadFile();
+		if(multipartFile != null){ //파일을 업로드하지 않을 경우도 존재
+			String filename = multipartFile.getOriginalFilename();
+			board.setFilename(filename);
+			
+			try {//파일업로드
+				multipartFile.transferTo(new File(uploadDir,filename));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		dao.insert(board);
@@ -105,6 +120,14 @@ public class BoardController {
 		model.addAttribute("list",list);
 		
 		return "list";
+	}
+	
+	@RequestMapping("/board_download")
+	public String board_download(@RequestParam("filename") String filename, Model model) throws Exception{
+		File file = new File(uploadDir, filename);
+		model.addAttribute("downloadFile",file);
+		
+		return "downloadView";
 	}
 	
 	/* board validater를 위한 것*/

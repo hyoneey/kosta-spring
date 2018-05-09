@@ -6,6 +6,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 public class Board implements Serializable{
 	/*jsr 303 방식*/
@@ -21,6 +22,8 @@ public class Board implements Serializable{
 	private String contents;
 	private String regdate;
 	private int hitcount;	
+	private MultipartFile uploadFile;
+	private String filename;
 	
 	public Board(){}
 
@@ -80,6 +83,22 @@ public class Board implements Serializable{
 
 	public void setHitcount(int hitcount) {
 		this.hitcount = hitcount;
+	}
+
+	public MultipartFile getUploadFile() {
+		return uploadFile;
+	}
+
+	public void setUploadFile(MultipartFile uploadFile) {
+		this.uploadFile = uploadFile;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	@Override

@@ -3,9 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
 	<!-- 자동으로 선언  -->
 	<!-- 어노테이션 하려는 선언 -->
@@ -30,6 +34,24 @@
 	</bean> 
 --> 
 
+	<!-- File up / down setting -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+	<bean id="downloadView" class="kosta.view.DownloadView"/>
+	<bean id="viewResolver3" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="1"/>
+	</bean>
+
+	<!-- Transaction Setting -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- AOP Setting -->
+	<aop:aspectj-autoproxy/> <!--메소드를 모두 호출해주는 역할 -->
+	<bean id="sessionAspect" class="kosta.aspect.SessionAspect"/>
+
 	<!-- Tiles Setting -->
 	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
 		<property name="definitions">
@@ -41,7 +63,7 @@
 	
 	<bean id="viewResolver2" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
-		<property name="order" value="1"/> <!-- 우선 순위 설정 -->
+		<property name="order" value="2"/> <!-- 우선 순위 설정 -->
 	</bean>
 
 	<!-- property는 필드,클래스 변수나 인스턴스 변수를 의미하면 setter메서드를 이용해 값을 할당한다. 따라서 setter메서드가 없으면 사용 불가 -->
@@ -49,7 +71,7 @@
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/view/" />
 		<property name="suffix" value=".jsp" />	
-		<property name="order" value="2"/>
+		<property name="order" value="3"/>
 	</bean>
 	
 	
